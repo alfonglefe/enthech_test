@@ -39,7 +39,6 @@ def search_and_save(searchTerm, fileType="", pagesToSearch=1):
     for page in range(1, pagesToSearch+1):
 
         url = f"https://www.bing.com/search?q={query}&go=Submit&qs=n&pq={query}&first={str(10*(page-1)+1)}&FORM=PERE"
-        print(url)
         response = requests.get(url, headers=headers)
 
         htmlText = BeautifulSoup(response.text, "html.parser")
@@ -57,22 +56,21 @@ def search_with_list(parametersList):
     if len(parametersList) == 1:
         search_and_save(parametersList[0])
     elif len(parametersList) == 3:
-        search_and_save(parametersList[0], parametersList[1], parametersList[2])
+        search_and_save(parametersList[0], parametersList[1], int(parametersList[2]))
     elif len(parametersList) == 2:
-        if isinstance(parametersList[1], str):
-            search_and_save(parametersList[0], fileType=parametersList[1])
+        if parametersList[1].isdigit():
+            search_and_save(parametersList[0],pagesToSearch= int(parametersList[1]))
         else:
-            search_and_save(parametersList[0], pagesToSearch=parametersList[1])
-
-def main():
-    search_and_save("enthec")
-    search_and_save("test", fileType="pdf")
-    search_with_list(["lista", "doc", 2])
+            search_and_save(parametersList[0], fileType=parametersList[1])
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("Exiting")
-        sys.exit()
+    #en local desde consola:
+    #python searcher.py enthec -> búsqueda normal de enthec
+    #python searcher.py test pdf -> búsqueda de arhivos pdf de test
+    #python searcher.py hola doc 2 -> búsqueda de archivos doc de hola trayendo las 2 primeras páginas
+    appendedItems = []
+    for i in range(1, len(sys.argv)):
+        appendedItems.append(sys.argv[i])
+
+    search_with_list(appendedItems)
